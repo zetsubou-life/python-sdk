@@ -342,7 +342,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 - 📧 Email: support@zetsubou.life
-- 💬 Discord: [Join our community](https://discord.gg/zetsubou)
 - 📖 Documentation: [docs.zetsubou.life](https://docs.zetsubou.life)
 - 🐛 Issues: [GitHub Issues](https://github.com/zetsubou-life/python-sdk/issues)
 
