@@ -11,6 +11,7 @@ from .chat import ChatService
 from .webhooks import WebhooksService
 from .account import AccountService
 from .nft import NFTService
+from .graphql import GraphQLService
 
 __all__ = [
     'ToolsService',
@@ -19,5 +20,6 @@ __all__ = [
     'ChatService',
     'WebhooksService',
     'AccountService',
-    'NFTService'
+    'NFTService',
+    'GraphQLService'
 ]

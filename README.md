@@ -16,6 +16,8 @@ A comprehensive Python SDK for the Zetsubou.life API v2, providing easy access t
 - 🔑 **API Keys**: Secure authentication with scope-based permissions
 - 📈 **Usage Tracking**: Monitor storage, API usage, and job statistics
 - ⚡ **S3 Storage**: High-performance cloud storage backend
+- 🎨 **NFT Generation**: Create and manage NFT projects, layers, and collections
+- 🔷 **GraphQL API**: Flexible query-based interface for fetching multiple resources
 
 ## Installation
 
@@ -232,6 +234,119 @@ print(f"New API key: {api_key['key']}")
 
 # Delete API key
 client.account.delete_api_key(key_id)
+```
+
+### 🎨 NFT Generation
+
+Create and manage NFT projects, layers, and generations:
+
+```python
+# Get NFT limits
+limits = client.nft.get_limits()
+print(f"Tier: {limits['tier']}, Max projects: {limits['limits']['max_projects']}")
+
+# List projects
+projects = client.nft.list_projects(include_archived=False)
+for project in projects:
+    print(f"{project.name} - {project.layer_count} layers")
+
+# Create project
+project = client.nft.create_project(
+    name="Cool Apes Club",
+    collection_config={
+        "network": "solana",
+        "name": "Cool Apes Club",
+        "symbol": "CAC",
+        "description": "777 unique apes",
+        "seller_fee_basis_points": 500
+    },
+    generation_config={
+        "format": {"width": 2000, "height": 2000}
+    }
+)
+
+# Create layer
+layer = client.nft.create_layer(
+    project_id=project.id,
+    name="Background",
+    order_index=0,
+    is_required=True
+)
+
+# Start generation
+generation = client.nft.create_generation(
+    project_id=project.id,
+    total_pieces=777
+)
+
+# Poll for completion
+import time
+while generation.status != 'completed':
+    if generation.status == 'failed':
+        print(f"Generation failed: {generation.error_message}")
+        break
+    time.sleep(5)
+    generation = client.nft.get_generation(generation.id)
+    print(f"Status: {generation.status}")
+```
+
+### 🔷 GraphQL API
+
+Execute GraphQL queries and mutations:
+
+```python
+# Simple query
+result = client.graphql.query('''
+    query {
+        viewer {
+            username
+            tier
+        }
+        jobs(limit: 5) {
+            jobs {
+                job_id
+                tool
+                status
+            }
+        }
+    }
+''')
+print(f"User: {result['data']['viewer']['username']}")
+
+# Query with variables
+result = client.graphql.query(
+    query='''
+        query GetJob($jobId: String!) {
+            jobs(job_id: $jobId) {
+                jobs {
+                    job_id
+                    status
+                }
+            }
+        }
+    ''',
+    variables={'jobId': 'your-job-id'}
+)
+
+# Mutation
+result = client.graphql.mutate('''
+    mutation {
+        createNftProject(
+            name: "My Project"
+            collectionConfig: {
+                network: "solana"
+                name: "My Project"
+                symbol: "MP"
+            }
+        ) {
+            success
+            project {
+                id
+                name
+            }
+        }
+    }
+''')
 ```
 
 ## Available Tools

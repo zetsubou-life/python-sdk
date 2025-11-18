@@ -218,7 +218,6 @@ class NFTService:
             True if successful
         """
         params = {'permanent': 'true' if permanent else 'false'}
-        # Note: client.delete doesn't support params, so we'll use _make_request for this
         response = self.client._make_request('DELETE', f'/api/v2/nft/projects/{project_id}', params=params)
         data = response.json()
         if not data.get('success'):
