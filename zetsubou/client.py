@@ -19,7 +19,7 @@ from .exceptions import (
     ServerError
 )
 from .models import Tool, Job, VFSNode, ChatConversation, ChatMessage, Webhook, Account, StorageQuota
-from .services import ToolsService, JobsService, VFSService, ChatService, WebhooksService, AccountService
+from .services import ToolsService, JobsService, VFSService, ChatService, WebhooksService, AccountService, NFTService
 
 
 class ZetsubouClient:
@@ -60,6 +60,7 @@ class ZetsubouClient:
         self.chat = ChatService(self)
         self.webhooks = WebhooksService(self)
         self.account = AccountService(self)
+        self.nft = NFTService(self)
     
     def _make_request(
         self,

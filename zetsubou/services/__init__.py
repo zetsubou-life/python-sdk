@@ -10,6 +10,7 @@ from .vfs import VFSService
 from .chat import ChatService
 from .webhooks import WebhooksService
 from .account import AccountService
+from .nft import NFTService
 
 __all__ = [
     'ToolsService',
@@ -17,5 +18,6 @@ __all__ = [
     'VFSService',
     'ChatService',
     'WebhooksService',
-    'AccountService'
+    'AccountService',
+    'NFTService'
 ]
