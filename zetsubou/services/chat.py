@@ -67,63 +67,58 @@ class ChatService:
         result = response.json()
         return ChatConversation.from_dict(result['conversation'])
     
-    def get_conversation(self, conversation_id: int) -> ChatConversation:
+    def get_conversation(self, conversation_uuid: str) -> ChatConversation:
         """
         Get details for a specific conversation.
         
         Args:
-            conversation_id: Conversation ID
+            conversation_uuid: Conversation UUID
             
         Returns:
             ChatConversation object
         """
-        # Note: This endpoint might not exist in the current API
-        # We'll implement it as a placeholder for future use
-        conversations = self.list_conversations(limit=1000)
-        for conv in conversations:
-            if conv.id == conversation_id:
-                return conv
-        
-        raise ZetsubouError(f"Conversation {conversation_id} not found")
+        response = self.client.get(f'/api/v2/chat/conversations/{conversation_uuid}')
+        data = response.json()
+        return ChatConversation.from_dict(data)
     
-    def delete_conversation(self, conversation_id: int) -> bool:
+    def delete_conversation(self, conversation_uuid: str) -> bool:
         """
         Delete a chat conversation.
         
         Args:
-            conversation_id: Conversation ID
+            conversation_uuid: Conversation UUID
             
         Returns:
             True if deletion was successful
         """
-        response = self.client.delete(f'/api/v2/chat/conversations/{conversation_id}')
+        response = self.client.delete(f'/api/v2/chat/conversations/{conversation_uuid}')
         data = response.json()
         return data.get('success', False)
     
-    def get_messages(self, conversation_id: int) -> List[ChatMessage]:
+    def get_messages(self, conversation_uuid: str) -> List[ChatMessage]:
         """
         Get all messages for a conversation.
         
         Args:
-            conversation_id: Conversation ID
+            conversation_uuid: Conversation UUID
             
         Returns:
             List of ChatMessage objects
         """
-        response = self.client.get(f'/api/v2/chat/conversations/{conversation_id}/messages')
+        response = self.client.get(f'/api/v2/chat/conversations/{conversation_uuid}/messages')
         data = response.json()
         return [ChatMessage.from_dict(msg) for msg in data['messages']]
     
     def send_message(
         self,
-        conversation_id: int,
+        conversation_uuid: str,
         content: str
     ) -> ChatMessage:
         """
         Send a message to a conversation.
         
         Args:
-            conversation_id: Conversation ID
+            conversation_uuid: Conversation UUID
             content: Message content
             
         Returns:
@@ -132,7 +127,7 @@ class ChatService:
         data = {'content': content}
         
         response = self.client.post(
-            f'/api/v2/chat/conversations/{conversation_id}/messages',
+            f'/api/v2/chat/conversations/{conversation_uuid}/messages',
             data=data
         )
         result = response.json()
@@ -140,14 +135,14 @@ class ChatService:
     
     def export_conversation(
         self,
-        conversation_id: int,
+        conversation_uuid: str,
         format: str = "json"
     ) -> Union[Dict[str, Any], str]:
         """
         Export a conversation in JSON or Markdown format.
         
         Args:
-            conversation_id: Conversation ID
+            conversation_uuid: Conversation UUID
             format: Export format ('json' or 'md')
             
         Returns:
@@ -155,7 +150,7 @@ class ChatService:
         """
         params = {'format': format}
         response = self.client.get(
-            f'/api/v2/chat/conversations/{conversation_id}/export',
+            f'/api/v2/chat/conversations/{conversation_uuid}/export',
             params=params
         )
         
@@ -200,5 +195,5 @@ class ChatService:
             Tuple of (ChatConversation, ChatMessage) objects
         """
         conversation = self.create_conversation(title, model, system_prompt)
-        message = self.send_message(conversation.id, content)
+        message = self.send_message(conversation.uuid, content)
         return conversation, message

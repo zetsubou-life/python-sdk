@@ -111,7 +111,7 @@ class VFSNode:
 @dataclass
 class ChatMessage:
     """Represents a chat message."""
-    id: int
+    uuid: str
     role: str  # 'user', 'assistant', 'system'
     content: str
     timestamp: datetime
@@ -120,7 +120,7 @@ class ChatMessage:
     def from_dict(cls, data: Dict[str, Any]) -> 'ChatMessage':
         """Create ChatMessage from API response."""
         return cls(
-            id=data['id'],
+            uuid=data.get('uuid') or data.get('id', ''),  # Support both uuid and legacy id
             role=data['role'],
             content=data['content'],
             timestamp=datetime.fromisoformat(data['timestamp'].replace('Z', '+00:00'))
@@ -130,7 +130,7 @@ class ChatMessage:
 @dataclass
 class ChatConversation:
     """Represents a chat conversation."""
-    id: int
+    uuid: str
     title: str
     model: str
     created_at: datetime
@@ -146,12 +146,12 @@ class ChatConversation:
             last_message = ChatMessage.from_dict(data['last_message'])
         
         return cls(
-            id=data['id'],
+            uuid=data.get('uuid') or data.get('id', ''),  # Support both uuid and legacy id
             title=data['title'],
             model=data['model'],
             created_at=datetime.fromisoformat(data['created_at'].replace('Z', '+00:00')),
             updated_at=datetime.fromisoformat(data['updated_at'].replace('Z', '+00:00')),
-            message_count=data['message_count'],
+            message_count=data.get('message_count', 0),
             last_message=last_message
         )
 

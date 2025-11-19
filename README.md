@@ -152,17 +152,17 @@ conversation = client.chat.create_conversation(
 
 # Send messages
 message = client.chat.send_message(
-    conversation_id=conversation.id,
+    conversation_uuid=conversation.uuid,
     content="Hello! Can you help me process some images?"
 )
 
 # Get conversation history
-messages = client.chat.get_messages(conversation.id, limit=50)
+messages = client.chat.get_messages(conversation.uuid, limit=50)
 for msg in messages:
     print(f"{msg.role}: {msg.content}")
 
 # Delete conversation
-client.chat.delete_conversation(conversation.id)
+client.chat.delete_conversation(conversation.uuid)
 ```
 
 ### 🪝 Webhooks
