@@ -230,3 +230,58 @@ class VFSService:
             results.append(node)
         
         return results
+    
+    def list_shared_folders(self) -> List[Dict[str, Any]]:
+        """
+        List folders shared with the current user.
+        
+        Returns:
+            List of shared folder dictionaries
+        """
+        response = self.client.get('/api/v2/shared-folders')
+        data = response.json()
+        return data.get('folders', [])
+    
+    def get_shared_folder(self, folder_id: str) -> Dict[str, Any]:
+        """
+        Get shared folder details and contents.
+        
+        Args:
+            folder_id: Shared folder UUID
+            
+        Returns:
+            Dictionary with folder details and file list
+        """
+        response = self.client.get(f'/api/v2/shared-folders/{folder_id}')
+        data = response.json()
+        return data
+    
+    def create_shortcut(
+        self,
+        folder_id: str,
+        name: Optional[str] = None,
+        parent_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Create a shortcut to a shared folder in user's drive.
+        
+        Args:
+            folder_id: Shared folder UUID to create shortcut for
+            name: Optional custom name for the shortcut
+            parent_id: Optional parent folder ID (defaults to root)
+            
+        Returns:
+            Dictionary with shortcut details
+        """
+        data = {}
+        if name:
+            data['name'] = name
+        if parent_id:
+            data['parent_id'] = parent_id
+        
+        response = self.client.post(
+            f'/api/v2/shared-folders/{folder_id}/shortcut',
+            data=data
+        )
+        result = response.json()
+        return result.get('shortcut', {})
