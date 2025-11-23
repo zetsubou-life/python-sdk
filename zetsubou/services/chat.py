@@ -136,28 +136,47 @@ class ChatService:
     def export_conversation(
         self,
         conversation_uuid: str,
-        format: str = "json"
-    ) -> Union[Dict[str, Any], str]:
+        format: str = "json",
+        output_path: Optional[str] = None
+    ) -> Union[Dict[str, Any], str, bytes]:
         """
-        Export a conversation in JSON or Markdown format.
+        Export a conversation in various formats.
         
         Args:
             conversation_uuid: Conversation UUID
-            format: Export format ('json' or 'md')
+            format: Export format ('json', 'md', 'html', or 'pdf')
+            output_path: Optional path to save the exported file (for html/pdf)
             
         Returns:
-            Exported conversation data
+            Exported conversation data (dict for json, str for md/html, bytes for pdf)
         """
         params = {'format': format}
         response = self.client.get(
             f'/api/v2/chat/conversations/{conversation_uuid}/export',
-            params=params
+            params=params,
+            stream=(format in ['html', 'pdf'])
         )
         
         if format == 'json':
             return response.json()
-        else:
+        elif format == 'md':
             return response.text
+        elif format == 'html':
+            content = response.text
+            if output_path:
+                with open(output_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                return output_path
+            return content
+        elif format == 'pdf':
+            content = response.content
+            if output_path:
+                with open(output_path, 'wb') as f:
+                    f.write(content)
+                return output_path
+            return content
+        else:
+            raise ValueError(f"Unsupported export format: {format}. Use 'json', 'md', 'html', or 'pdf'")
     
     def get_available_models(self) -> List[str]:
         """

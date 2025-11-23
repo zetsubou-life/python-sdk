@@ -285,3 +285,17 @@ class VFSService:
         )
         result = response.json()
         return result.get('shortcut', {})
+    
+    def delete_workspace(self, workspace_id: str) -> bool:
+        """
+        Delete a workspace and all associated folders.
+        
+        Args:
+            workspace_id: Workspace UUID to delete
+            
+        Returns:
+            True if deletion was successful
+        """
+        response = self.client.delete(f'/api/vfs/workspace/{workspace_id}')
+        data = response.json()
+        return data.get('success', False)

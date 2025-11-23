@@ -96,4 +96,58 @@ class GraphQLService:
         """
         result = self.query('{ health }')
         return result.get('data', {}).get('health', 'unknown')
+    
+    def create_shared_folder_shortcut(
+        self,
+        folder_id: str,
+        name: Optional[str] = None,
+        parent_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Create a shortcut to a shared folder using GraphQL mutation.
+        
+        Args:
+            folder_id: UUID of the shared folder to create a shortcut to
+            name: Optional custom name for the shortcut
+            parent_id: Optional parent folder ID where shortcut should be created
+            
+        Returns:
+            Dictionary with mutation result including success, shortcut, and message
+            
+        Example:
+            >>> result = client.graphql.create_shared_folder_shortcut(
+            ...     folder_id="shared-folder-uuid",
+            ...     name="My Shortcut"
+            ... )
+            >>> print(result['data']['createSharedFolderShortcut']['success'])
+        """
+        variables = {'folder_id': folder_id}
+        if name:
+            variables['name'] = name
+        if parent_id:
+            variables['parent_id'] = parent_id
+        
+        mutation = """
+        mutation CreateSharedFolderShortcut($folder_id: String!, $name: String, $parent_id: String) {
+            createSharedFolderShortcut(
+                folder_id: $folder_id
+                name: $name
+                parent_id: $parent_id
+            ) {
+                success
+                shortcut {
+                    id
+                    name
+                    type
+                    path
+                    target_folder_id
+                    created_at
+                }
+                message
+            }
+        }
+        """
+        
+        result = self.mutate(mutation, variables=variables)
+        return result
 

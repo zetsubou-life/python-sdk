@@ -133,6 +133,11 @@ client.vfs.delete_node(node.id)
 # Search files
 images = client.vfs.get_images(limit=100)
 videos = client.vfs.get_videos(limit=100)
+
+# Delete workspace (deletes all associated folders)
+success = client.vfs.delete_workspace(workspace_id="workspace-uuid")
+if success:
+    print("Workspace deleted successfully")
 ```
 
 ### 💬 Chat Integration
@@ -163,6 +168,19 @@ for msg in messages:
 
 # Delete conversation
 client.chat.delete_conversation(conversation.uuid)
+
+# Export conversation in various formats
+# JSON export
+json_data = client.chat.export_conversation(conversation.uuid, format="json")
+
+# Markdown export
+md_content = client.chat.export_conversation(conversation.uuid, format="md")
+
+# HTML export (styled)
+html_content = client.chat.export_conversation(conversation.uuid, format="html", output_path="conversation.html")
+
+# PDF export
+pdf_bytes = client.chat.export_conversation(conversation.uuid, format="pdf", output_path="conversation.pdf")
 ```
 
 ### 🪝 Webhooks
@@ -290,11 +308,35 @@ while generation.status != 'completed':
     print(f"Status: {generation.status}")
 ```
 
+### 💰 Wallet & Billing
+
+Get wallet information with dual-currency support:
+
+```python
+# Get wallet info (SOL and USDC balances)
+wallet = client.account.get_wallet_info()
+print(f"Deposit Address: {wallet['deposit_address']}")
+print(f"USDC Balance: ${wallet['balance']:.2f}")
+print(f"SOL Balance: {wallet['sol_balance']:.4f} SOL")
+print(f"Credits Remaining: {wallet['credits_remaining']}")
+print(f"Pay-as-you-go: {'Enabled' if wallet['paug_enabled'] else 'Disabled'}")
+```
+
 ### 🔷 GraphQL API
 
 Execute GraphQL queries and mutations:
 
 ```python
+# Create shared folder shortcut via GraphQL
+result = client.graphql.create_shared_folder_shortcut(
+    folder_id="shared-folder-uuid",
+    name="My Shortcut",
+    parent_id="parent-folder-uuid"  # Optional
+)
+if result['data']['createSharedFolderShortcut']['success']:
+    shortcut = result['data']['createSharedFolderShortcut']['shortcut']
+    print(f"Shortcut created: {shortcut['name']} at {shortcut['path']}")
+
 # Simple query
 result = client.graphql.query('''
     query {

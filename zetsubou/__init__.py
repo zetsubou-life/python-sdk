@@ -32,7 +32,7 @@ from .models import (
     StorageQuota
 )
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __author__ = "Zetsubou.life"
 __email__ = "support@zetsubou.life"
 

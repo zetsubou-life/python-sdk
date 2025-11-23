@@ -195,3 +195,21 @@ class AccountService:
         """
         quota = self.get_storage_quota()
         return quota.breakdown
+    
+    def get_wallet_info(self) -> Dict[str, Any]:
+        """
+        Get wallet information including SOL and USDC balances.
+        
+        Returns:
+            Dictionary with wallet info including:
+            - deposit_address: User's wallet address
+            - balance: USDC balance (cached)
+            - sol_balance: SOL balance (from blockchain)
+            - credits_remaining: Remaining credits
+            - current_overdraft: Current overdraft amount
+            - paug_enabled: Pay-as-you-go enabled status
+            - max_monthly_spend: Maximum monthly spend limit
+            - tier: Current subscription tier
+        """
+        response = self.client.get('/api/billing/wallet/info')
+        return response.json()
